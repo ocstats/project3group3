@@ -1,0 +1,59 @@
+---
+title: "Proj3 Workspace Em"
+author: "Em Webster"
+date: "4/29/2018"
+output: html_document
+---
+** load all packages
+```{r}
+library(dbplyr)
+library(mdsr)
+library(RMySQL)
+db <- dbConnect_scidb("citibike")
+```
+
+** show all tables in citibike
+```{sql connection=db}
+SHOW TABLES;
+```
+
+** explore station_months
+```{sql connection=db}
+DESCRIBE station_months
+```
+
+** explore station_summary
+```{sql connection=db}
+DESCRIBE station_summary
+```
+
+** explore trip_summary
+```{sql connection=db}
+DESCRIBE trip_summary
+```
+
+** explore trips
+```{sql connection=db}
+DESCRIBE trips
+```
+
+** deep explore trips
+```{sql connection=db}
+SELECT * FROM trips LIMIT 0,10
+```
+
+** deep explore station_summary
+```{sql connection=db}
+SELECT * FROM station_summary LIMIT 0,10
+```
+
+** make gender pct from trips
+```{sql connection=db}
+SELECT 
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct
+FROM trips AS t
+LIMIT 0,25
+```
+
