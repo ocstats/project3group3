@@ -9,6 +9,8 @@ output: html_document
 library(dbplyr)
 library(mdsr)
 library(RMySQL)
+library(readr)
+library(ggthemes)
 db <- dbConnect_scidb("citibike")
 ```
 
@@ -39,21 +41,119 @@ DESCRIBE trips
 
 ** deep explore trips
 ```{sql connection=db}
-SELECT * FROM trips LIMIT 0,10
+SELECT * FROM trips 
+WHERE start_time LIKE '2017-03-29%'
+LIMIT 0,10
 ```
 
 ** deep explore station_summary
-```{sql connection=db}
-SELECT * FROM station_summary LIMIT 0,10
-```
+#```{sql connection=db}
+#SELECT * FROM station_summary LIMIT 0,10
+#```
 
 ** make gender pct from trips
-```{sql connection=db}
-SELECT 
-sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
-sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
-sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct
+#```{sql connection=db}
+SELECT
+user_type,
+sum(if(gender = 1, 1, 0)) / sum(1) AS male_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS female_pct
 FROM trips AS t
-LIMIT 0,25
+WHERE start_time LIKE '2017-03-29%'
+LIMIT 0,5
 ```
+
+```{sql connection=db}
+SELECT
+user_type,
+num(*) AS male_pct,
+FROM trips AS t
+WHERE start_time LIKE '2017-03-29%'
+LIMIT 0,5
+```
+
+#```{r}
+genderpct <- "
+SELECT 
+user_type,
+sum(if(gender = 1, 1, 0)) / sum(1) AS male_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS female_pct
+FROM trips AS t
+LIMIT 0,5
+"
+db %>% dbGetQuery(genderpct) %>% collect()
+genderpct <- as.data.frame(genderpct)
+genderpct
+```
+
+```{r}
+query <- "
+SELECT 
+user_type,
+gender
+FROM trips AS t
+WHERE gender = 1 OR gender = 2
+LIMIT 0,100
+"
+query <- db %>% dbGetQuery(query) %>% collect()
+genderpct <- as.data.frame(query)
+
+```
+
+```{r}
+genderpct
+```
+
+
+```{r}
+genderpct$gender <- as.factor(genderpct$gender)
+pie <- ggplot(genderpct, aes(x = "", fill = factor(gender))) + 
+  geom_bar(width = 1, color='black') +
+  theme(axis.line = element_blank(), 
+        plot.title = element_text(hjust=0.5)) + 
+  labs(fill="gender", 
+       x=NULL, 
+       y=NULL, 
+       title="Pie Chart", 
+       caption="Source: citi")
+pie <- pie + coord_polar(theta = "y", start=0) + scale_fill_manual(values=c("dodgerblue", "deeppink"), 
+                       name="Gender",
+                       breaks=c("1", "2"),
+                       labels=c("Male", "Female")) + theme_fivethirtyeight()
+
+pie
+```
+
+```{r}
+var <- genderpct$gender
+nrows <- 10
+df <- expand.grid(y = 1:nrows, x = 1:nrows)
+categ_table <- round(table(var) * ((nrows*nrows)/(length(var))))
+categ_table
+```
+
+```{r}
+library(waffle)
+font_import()
+fonts()[grep("Awesome", fonts())]
+```
+
+```{r}
+fonts()[grep("Awesome", fonts())]
+loadfonts()
+```
+
+```{r}
+library(extrafont)
+fonts()[grep("Awesome", fonts())]
+```
+
+```{r}
+library(waffle)
+parts <- c(`Male`=73, `Female`=27)
+chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c("dodgerblue", "deeppink"),
+       title="Citibike Users by Identifed Gender") + theme_fivethirtyeight() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.text = element_blank(),
+        axis.ticks.x = element_blank())+ labs(subtitle="1 square = 425 Riders")
+chart
+```
+
 
