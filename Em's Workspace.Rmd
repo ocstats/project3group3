@@ -184,4 +184,16 @@ chart
 ```
 
 
->>>>>>> e81e94eb47a5dd4e3f5476add80c782a64d80845
+```{r}
+query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,100"
+
+trip_times <- db %>% dbGetQuery(query) %>% collect()
+trip_times
+```
+
+
+
+
+
+
+
