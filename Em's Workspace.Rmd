@@ -57,3 +57,28 @@ FROM trips AS t
 LIMIT 0,25
 ```
 
+**
+```{sql connection=db}
+SELECT 
+sum(duration)/sum(1) AS zero_duration
+FROM trips
+WHERE gender = '0'
+LIMIT 0, 10;
+```
+
+
+```{sql connection=db}
+SELECT 
+sum(if(duration > 0, duration, if(gender = 1,1,0)))/sum(1) AS one_duration,
+sum(if(duration > 0, duration, if(gender = 0,1,0)))/sum(1) AS zero_duration
+FROM trips
+LIMIT 0, 10;
+```
+
+```{sql connection=db}
+SELECT 
+sum(duration)/sum(1) AS two_duration
+FROM trips
+WHERE gender = '2'
+LIMIT 0, 10;
+```
