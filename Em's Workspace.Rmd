@@ -176,9 +176,9 @@ fonts()[grep("Awesome", fonts())]
 
 ```{r}
 library(waffle)
-parts <- c(`Male`=73, `Female`=27)
+parts <- c(`Male (73%)`=73, `Female (27%)`=27)
 chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c("dodgerblue", "deeppink"),
-       title="Citibike Users by Identifed Gender") + theme_fivethirtyeight() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.text = element_blank(),
+       title="Citi Bike Users by Gender") + theme_fivethirtyeight() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.text = element_blank(),
         axis.ticks.x = element_blank())+ labs(subtitle="1 square = 425 Riders")
 chart
 ```
