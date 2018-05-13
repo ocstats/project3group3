@@ -192,12 +192,15 @@ trip_times
 ```
 
 ```{r}
-trip_times <- trip_times %>% mutate(trip_length = difftime(stop_time, start_time, units = "mins"))
+trip_times <- trip_times %>% mutate(trip_length = difftime(stop_time, start_time, units = "mins"), row_num = row_number()) 
 trip_times
 ```
 
+```{r}
+trips_plot <- trip_times %>% ggplot(aes(x = row_num, y = trip_length, color = gender)) + geom_point() + xlab("Trip Number") + ylab("Trip Length in Minutes") 
 
-
+trips_plot
+```
 
 
 
