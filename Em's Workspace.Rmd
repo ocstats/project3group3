@@ -185,7 +185,7 @@ chart
 
 
 ```{r}
-query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,100"
+query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,300"
 
 trip_times <- db %>% dbGetQuery(query) %>% collect()
 trip_times
@@ -197,7 +197,7 @@ trip_times
 ```
 
 ```{r}
-trips_plot <- trip_times %>% ggplot(aes(x = row_num, y = trip_length, color = gender)) + geom_point() + xlab("Trip Number") + ylab("Trip Length in Minutes") 
+trips_plot <- trip_times %>% ggplot(aes(x = row_num, y = trip_length, color = factor(gender))) + geom_point() + xlab("Trip Number") + ylab("Trip Length in Minutes") + scale_color_discrete(name = "Gender") + ylim(c(0,65))
 
 trips_plot
 ```
