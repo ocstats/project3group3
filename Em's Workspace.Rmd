@@ -191,6 +191,19 @@ trip_times <- db %>% dbGetQuery(query) %>% collect()
 trip_times
 ```
 
+```{r}
+trip_times <- trip_times %>% mutate(trip_length = difftime(stop_time, start_time, units = "mins"))
+trip_times
+```
+
+
+
+
+
+
+
+
+
 
 
 
