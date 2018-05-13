@@ -1,0 +1,37 @@
+---
+title: "Em’s Workspace TWO"
+author: "Em Webster"
+date: "5/13/2018"
+output: html_document
+---
+
+
+```{r}
+library(dbplyr)
+library(mdsr)
+library(RMySQL)
+library(readr)
+library(ggthemes)
+db <- dbConnect_scidb("citibike")
+```
+
+```{sql connection=db}
+SELECT * FROM trips
+WHERE start_time LIKE '2017-03-29%'
+LIMIT 0,10
+```
+
+```{r}
+querynew <- "SELECT * FROM trips
+WHERE start_time LIKE '2017-03-29%'
+LIMIT 0,100"
+
+querynew <- db %>% dbGetQuery(querynew) %>% collect()
+timestuff <- as.data.frame(querynew)
+timestuff
+```
+
+```{r}
+format(timestuff$start_time, "%H")
+```
+

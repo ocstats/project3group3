@@ -157,7 +157,7 @@ FROM trips
 WHERE gender = '2'
 LIMIT 0, 10;
 ```
-=======
+
 ```{r}
 library(waffle)
 font_import()
