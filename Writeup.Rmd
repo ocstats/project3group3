@@ -1,6 +1,7 @@
 ---
-title: "This Will Be the Final Writeup!"
-author: "NAMES"
+title: "Closing the Gender Gap in Urban Cycling"
+subtitle: "A look at gendered patternsin NYC’s Citi Bike System"
+author: "Ian Dinsmore, Fiachra McDonagh, Lexi Nieves, Em Webster"
 date: "05/19/2018"
 output:
   html_document: default
@@ -8,12 +9,8 @@ output:
     number_sections: yes
 urlcolor: blue
 ---
-
-
-******************
-IGNORE ALL THE OTHER STUFF BELOW RIGHT NOW, THIS IS THE OLD MARKUP FILE FROM MY PROJ ONE AND IM GONNA USE IT TO MODEL OUR WRITEUP
-******************
-
+#####<span style="color:red">DISCLAIMER</span>
+We don’t know how the gender data in the database used for this post was collected, so it’s unclear if our data reflects identified gender or gender assigned at birth, hence why don’t make the distinction in this presentation. We acknowledge the problematic nature of drawing conlculsions from data that whose collection methods we don't have a full understanding of, as well as the problematic nature of a coding gender as a binary variable as that excludes people who idenitfy outside the gender binary. However, we must work with the data we have avaliable, and urge data scientests in the future to be more transparent about their data collection methods and make space for gender diversity within their data.
 
 ```{r include=FALSE, cache=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -24,113 +21,50 @@ knitr::opts_chunk$set(error = TRUE)
 ```
 
 ```{r include=FALSE, cache=FALSE}
-library(tidyverse)
+library(dbplyr)
+library(mdsr)
+library(RMySQL)
 library(readr)
 library(ggthemes)
+library(waffle)
+library(extrafont)
 ```
 
 ```{r include=FALSE, cache=FALSE}
-tuition_wage <- read_csv("average-tuition-wage.csv")
+db <- dbConnect_scidb("citibike")
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <- ggplot(tuition_wage, aes(x = year))
+query <- "
+SELECT 
+user_type,
+gender
+FROM trips AS t
+WHERE gender = 1 OR gender = 2
+LIMIT 0,100
+"
+query <- db %>% dbGetQuery(query) %>% collect()
+genderpct <- as.data.frame(query)
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <- cost_plot +
-  geom_bar(
-    stat = "identity",
-    aes(y = summer_pay),
-     fill = "darkseagreen3", color = "white")
+genderpct$gender <- as.factor(genderpct$gender)
+var <- genderpct$gender
+nrows <- 10
+df <- expand.grid(y = 1:nrows, x = 1:nrows)
+categ_table <- round(table(var) * ((nrows*nrows)/(length(var))))
+categ_table
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <- 
-  cost_plot +
-  geom_line(aes(y = public_4yr_instate),
-    color = "firebrick2")
+loadfonts()
+fonts()[grep("Awesome", fonts())]
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <-
-  cost_plot +
-  geom_line(aes(y = private_4yr),
-    color = "dodgerblue2")
-## anyone know how to mess with this so it is more readable?
-  ## This is a start but ill continue to the work to make it cute and journalism worthy 
+fonts()[grep("Awesome", fonts())]
 ```
 
-```{r include=FALSE, cache=FALSE}
-# Maybe no subtitle and be more specific in the headings on graph?
-
-cost_plot <- cost_plot + labs( x = "Year", y = "Dollars") + ggtitle("Average Tuition Fees at Four Year Institutions vs. 
-Minimum Wage Summer Earnings", subtitle = "Public Instate and Private Schools" ) + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.subtitle = element_text(hjust = 0.5))
-```
-
-
-```{r include=FALSE, cache=FALSE}
-cost_plot <-
-  cost_plot +
-  geom_bar(
-    stat = "identity",
-    aes(
-      y = ifelse(
-        year == 1988,
-        public_4yr_instate,
-        0
-      )
-    ),
-     fill = "firebrick2",
-    color = "white"
-  )
-```
-
-```{r include=FALSE, cache=FALSE}
-cost_plot <-
-  cost_plot +
-  geom_bar(
-    stat = "identity",
-    aes(
-      y = ifelse(
-        year == 1969,
-        private_4yr,
-        0
-      )
-    ),
-     fill = "dodgerblue2",
-    color = "white"
-  )
-```
-
-```{r include=FALSE, cache=FALSE}
-cost_plot <- cost_plot +
-    geom_text(
-    x = 1975, y = 7000, 
-    label = "Private Schools",
-    colour = "dodgerblue2"
-    ) +
-  geom_text(
-    x = 1995, y = 6000, 
-    label = "Public Schools in State ",
-    colour = "firebrick2"
-    )
-```
-
-```{r include=FALSE, cache=FALSE}
-library(readr)
-library(scales)
-schoolname <- read_csv("specific-schools-edited.csv")
-```
-
-```{r, echo = FALSE}
-name_plot <- ggplot(schoolname, aes(x=university, y = (farm_min_wage_1976*480)/cost_1976)) + geom_bar(stat="identity", position="dodge", aes(fill=factor(Year))) + scale_y_continuous(labels=percent_format()) + xlab("University") + ylab("Percetage of University Fees")
-name_plot <- name_plot + scale_fill_manual(values = c("firebrick1", "firebrick")) + guides(fill=guide_legend(title="Year"))
-```
-
-```{r include=FALSE, cache=FALSE}
-name_plot <- name_plot + ggtitle("Percentage of University Fees that Summer Wage Covers") + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.subtitle = element_text(hjust = 0.5)) 
-```
 ## Introduction
 Many politicians often turn back time to the "golden days" when they were able to pay the entirety of their college tuitions with their summer wages. We decided to put this claim into context. The 1970s marks a period in economic history that begins a general wage stagnation, which is when the cost of goods and services exceeds one's ability to work for it and afford it The cost of attending higher education is not exempt from this trend, even public institutions. Public four year institutions aim to make higher education more accessible for economically disadvantaged students, yet in recent years tuition at public institutions has risen so sharply that being able to work one's self through college has become less realistic than in the 1970s. 
 
@@ -138,17 +72,23 @@ Many politicians often turn back time to the "golden days" when they were able t
 The graph above charts the increase of summer earnings over time (calculated as the the federal hourly minimum wage for 12 weeks at 40 hours a week) against the increase of public and private four year college tuition in the United States. We can see that prior to 1988, one could cover an entire year of tuition at a four year public institution with summer wages. However, due to tuition rising faster than the federal minimum wage, public higher education becomes inaccessible to those relying on minimum wage jobs around the 1990s. Private education, on the other hand, was never attainable with a summer's wage during the time frame of the data.
 
 ```{r, echo = FALSE}
-library(ggthemes)
-cost_plot <- cost_plot + theme_gdocs()
-cost_plot
+library(waffle)
+parts <- c(`Male (73%)`=73, `Female (27%)`=27)
+chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c("dodgerblue", "deeppink"),
+       title="Citi Bike Users by Gender") + theme_fivethirtyeight() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.text = element_blank(),
+        axis.ticks.x = element_blank())+ labs(subtitle="1 square = 425 Riders")
+chart
+```
+
+```{r, echo = FALSE}
+
 ```
 
 ## How Much College Can One Pay For With Minimum Wage?
 This graph depicts three well-known public universities and the percentage of university fees covered by summer wages. We focused on public universities because it lies at the nexus of the claim that public education is accessible for everyone. While this claim was true in 1976, it no longer stands in 2014. Our previous graph focused on broader trends whereas this graph hits the numbers home by focusing on three distinguished universities. 
 
 ```{r, echo = FALSE}
-name_plot <- name_plot + theme_gdocs(base_size = 8)
-name_plot
+
 ```
 
 ## Average Rate of Growth
@@ -157,84 +97,7 @@ This graph displays the marginal growth of Tuition and Summer Pay depicting the 
 In the 1980's there is little to no increase in summer pay, but tuition prices continued to grow. Graph 0.1 calculated the amount of tuition that summer pay can account for. In the year 1988, summer pay stopped being able to cover a year's tuition. This, in part, is due to the previous years lacking of summer pay growth. It was also in 1988 that the summer pay began to grow. The graph does not show trends between the summer pay and tuition growth. There is, a similarity between the average tuition at both private and public institutions. The average marginal increases at all universities seemed to be similarly proportional. It was not until the year 2000 where the growth patterns differentiate. 
 
 ```{r, echo = FALSE, message=F, warning=F}
-library(tidyverse)
-library(readr)
-plotter <- read_csv("average-tuition-wage.csv")
-#view(plotter)
 
-#For Loop to change data for Private_4yr
-z = plotter[2, "private_4yr"]
-for (i in 2 : 44)
-{
-  #Copy over years
-  y = z
-  x = plotter[i+1, 2]
-  omega = (x/y)*100
-  #print(omega)
-  plotter[i-1, 2] = omega
-  #Sets a variable buffer to save the value of x
-  z = x
-}
-plotter[1,2] = 100 #Sets the original data to be 100%
-
-#For Loop to change data for Public_4yr
-z = plotter[2, "public_4yr_instate"]
-for (i in 2 : 44)
-{
-  #Copy over years
-  y = z
-  x = plotter[i+1, 3]
-  omega = (x/y)*100
-  #print(omega)
-  plotter[i-1, 3] = omega
-  #Sets a variable buffer to save the value of x
-  z = x
-}
-plotter[1,3] = 100 #Sets the original data to be 100%
-
-
-#For Loop to change data for Summer_Pay
-z = plotter[2, "summer_pay"]
-for (i in 2 : 44)
-{
-  #Copy over years
-  y = z
-  x = plotter[i+1, 5]
-  omega = (x/y)*100
-  #print(omega)
-  plotter[i-1, 5] = omega
-  #Sets a variable buffer to save the value of x
-  z = x
-}
-plotter[1,5] = 100 #Sets the original data to be 100%
-
-#Initializes the graph and sets the X axis to be the year
-percent_growth <- ggplot(plotter, aes(x = year)) +
-  labs( x = "Year", y = "Percent Growth %") +
-  ggtitle("Average Percent Growth of Tuition", subtitle = "Public Instate and Private Schools")
-
-#Adds Slopes From Growth to Graph
-percent_growth <- percent_growth +
-  geom_line(aes(y = private_4yr), color = "firebrick2") +
-  geom_line(aes(y = public_4yr_instate), color = "dodgerblue2") +
-  geom_line(stat = "identity", aes(y = summer_pay), color = "darkseagreen3") +
-  geom_text(
-    x = 1975, y = 125, 
-    label = "Private 4yr",
-    colour = "firebrick2"
-    ) +
-  geom_text(
-    x = 1985, y = 125, 
-    label = "Public 4yr",
-    colour = "dodgerblue2"
-    ) +
-  geom_text(
-    x = 1995, y = 125,
-    label = "Summer Pay",
-    colour = "darkseagreen3"
-  )
-percent_growth <- percent_growth + theme_gdocs()
-percent_growth
 ```
 
 ## Methodology
