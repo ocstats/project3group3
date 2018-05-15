@@ -66,11 +66,9 @@ fonts()[grep("Awesome", fonts())]
 ```
 
 ## Introduction
-Many politicians often turn back time to the "golden days" when they were able to pay the entirety of their college tuitions with their summer wages. We decided to put this claim into context. The 1970s marks a period in economic history that begins a general wage stagnation, which is when the cost of goods and services exceeds one's ability to work for it and afford it The cost of attending higher education is not exempt from this trend, even public institutions. Public four year institutions aim to make higher education more accessible for economically disadvantaged students, yet in recent years tuition at public institutions has risen so sharply that being able to work one's self through college has become less realistic than in the 1970s. 
-
-## Tuition is Rising Faster than Minimum Wage
-The graph above charts the increase of summer earnings over time (calculated as the the federal hourly minimum wage for 12 weeks at 40 hours a week) against the increase of public and private four year college tuition in the United States. We can see that prior to 1988, one could cover an entire year of tuition at a four year public institution with summer wages. However, due to tuition rising faster than the federal minimum wage, public higher education becomes inaccessible to those relying on minimum wage jobs around the 1990s. Private education, on the other hand, was never attainable with a summer's wage during the time frame of the data.
-
+  As urban biking as a mode of transportation has increased in popularity over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in New York City’s Citi Bike program, as well as many other urban bike sharing programs across America. This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
+  
+## What is overall gender distribution of Citi Bike Users?
 ```{r, echo = FALSE}
 library(waffle)
 parts <- c(`Male (73%)`=73, `Female (27%)`=27)
@@ -79,25 +77,29 @@ chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c(
         axis.ticks.x = element_blank())+ labs(subtitle="1 square = 425 Riders")
 chart
 ```
+This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is dominated by male riders, accounting for almost three fourths of the trips taken. 
 
-```{r, echo = FALSE}
+## Does the gender distribution differ by duration of trip?
+```{r include=FALSE, cache=FALSE}
+query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,300"
 
+trip_times <- db %>% dbGetQuery(query) %>% collect()
+trip_times
 ```
 
-## How Much College Can One Pay For With Minimum Wage?
-This graph depicts three well-known public universities and the percentage of university fees covered by summer wages. We focused on public universities because it lies at the nexus of the claim that public education is accessible for everyone. While this claim was true in 1976, it no longer stands in 2014. Our previous graph focused on broader trends whereas this graph hits the numbers home by focusing on three distinguished universities. 
-
-```{r, echo = FALSE}
-
+```{r include=FALSE, cache=FALSE}
+trip_times <- trip_times %>% filter(gender != 2) %>% mutate(trip_length = difftime(stop_time, start_time, units = "mins"), row_num = row_number()) 
+trip_times <- trip_times %>% mutate(gender = as.character(gender))
+trip_times
 ```
 
-## Average Rate of Growth
-This graph displays the marginal growth of Tuition and Summer Pay depicting the comparison of Tuition fees and Summer Pay marginal growth.
+```{r, echo = FALSE, warning=FALSE}
+trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Duration in Minutes") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
+                         breaks=c("0", "1"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender")
 
-In the 1980's there is little to no increase in summer pay, but tuition prices continued to grow. Graph 0.1 calculated the amount of tuition that summer pay can account for. In the year 1988, summer pay stopped being able to cover a year's tuition. This, in part, is due to the previous years lacking of summer pay growth. It was also in 1988 that the summer pay began to grow. The graph does not show trends between the summer pay and tuition growth. There is, a similarity between the average tuition at both private and public institutions. The average marginal increases at all universities seemed to be similarly proportional. It was not until the year 2000 where the growth patterns differentiate. 
-
-```{r, echo = FALSE, message=F, warning=F}
-
+trips_plot
 ```
 
 ## Methodology
