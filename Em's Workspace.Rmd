@@ -10,6 +10,7 @@ library(dbplyr)
 library(mdsr)
 library(RMySQL)
 library(readr)
+library(ggthemes)
 ```
 ```{r}
 db <- dbConnect_scidb("citibike")
@@ -199,9 +200,10 @@ trip_times
 ```
 
 ```{r}
-trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Length in Minutes") + xlab("Gender") +ylim(c(0,65)) + scale_fill_discrete(name="Gender",
+trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Duration in Minutes") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
                          breaks=c("0", "1"),
-                         labels=c("Male", "Female")) 
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender")
 
 trips_plot
 ```
