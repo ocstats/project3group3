@@ -231,7 +231,13 @@ age_time_plot
 **Age by gender box plot 
 ```{r}
 ##same labeling issues
-age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+xlab("Gender")+ylab("Age")+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender")
+age_time <- age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+ylab("Age") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
+                         breaks=c("1", "2"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender")
+
+age_time
+
 ```
 
 
