@@ -183,7 +183,7 @@ db <- db %>% dbGetQuery(joint.query) %>% collect() %>%
   geom_text(x = -73.85, y = 40.75, label = "Queens") +
   geom_text(x = -73.9, y = 40.6625, label = "Brooklyn") +
   geom_curve(x = -74, xend = -73.9625, y = 40.7, yend = 40.725, curvature = 0.01) +
-  geom_curve(x = -73.9625, xend = -73.925, y = 40.725, yend = 40.7875, curvature = 0.01) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ylab("Longitude") + xlab("Latitude") + ggtitle("Stations by Gender") + labs(subtitle="Plot depicts map of NYC") + scale_fill_discrete(name="Female to Male Ratio")
+  geom_curve(x = -73.9625, xend = -73.925, y = 40.725, yend = 40.7875, curvature = 0.01) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ylab("Longitude") + xlab("Latitude") + ggtitle("Top 16 Stations by Gender") + labs(subtitle="Plot depicts coordinate map of NYC") + scale_fill_discrete(name="Female to Male Ratio")
 
 db
 ```
