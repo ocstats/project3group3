@@ -102,7 +102,10 @@ trip_times
 trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Duration in Minutes") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
                          breaks=c("0", "1"),
                          labels=c("Male", "Female"),
-                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender")
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender") +
+  stat_summary(geom="text", fun.y=median,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.50), size=3.5)
 
 trips_plot
 ```
@@ -124,7 +127,10 @@ age_time<-query %>% mutate(age=2017-birth_year, row_num=row_number(),trip_length
 age_time_plot <- age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+xlab(" ")+ylab("Age")+ scale_fill_manual(name="Gender",
                          breaks=c("1", "2"),
                          labels=c("Male", "Female"),
-                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender")
+                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender") +
+  stat_summary(geom="text", fun.y=median,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.50), size=3.5)
 
 age_time_plot
 
@@ -132,6 +138,8 @@ age_time_plot
 ```
 
 text
+
+---
 
 # Methodology
 The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
