@@ -66,10 +66,11 @@ fonts()[grep("Awesome", fonts())]
 ```
 
 ## Introduction
-  As urban biking as a mode of transportation has increased in popularity over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in New York City’s Citi Bike program, as well as many other urban bike sharing programs across America. This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
+Cycling has seen an impressive boom in recent years, with more Americans than ever hopping on the saddle of a bike and hitting the road. Movements have spurred across the country encouraging citizens to opt for two wheels over four—[especially in major US cities like New York City](https://medium.com/reclaim-magazine). But as urban biking as a mode of transportation has increased in popularity in America over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in New York City’s Citi Bike program, with [less than 25 percent of all Citi Bike trips taken by women](https://wagner.nyu.edu/impact/research/publications/citi-bike-first-two-years). This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
+
   
 ## What is overall gender distribution of Citi Bike Users?
-This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is heavily dominated by male riders, accounting for almost three fourths of the trips taken.
+  This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is heavily dominated by male riders, accounting for almost three fourths of the trips taken.
 
 ```{r, echo = FALSE}
 library(waffle)
@@ -80,10 +81,10 @@ chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c(
 chart
 ```
 
-So why is this? Using the Citi Bike data, we’ll be exploring several potential gendered trends in hope to gain insight into the cause of this gender gap.
+  So why is this? Using the Citi Bike data, we’ll be exploring several potential gendered trends in hope to gain insight into the cause of this gender gap.
 
 ## Does the gender distribution differ by duration of trip?
-Studies have demonstrated that [men, on average, have longer commutes than women](https://www.sciencedirect.com/science/article/pii/S0739885911000655). This could potentially be one of the factors causing the gap in NYC’s Citi Bike program and urban cycling at large--perhaps women are less in need of biking as a mode of transportation as their workplaces are more accessible by walking, whereas men are more in a place to take advantage of bike sharing due to their longer commutes.
+  Studies have demonstrated that [men, on average, have longer commutes than women](https://www.sciencedirect.com/science/article/pii/S0739885911000655). This could potentially be one of the factors causing the gap in NYC’s Citi Bike program and urban cycling at large--perhaps women are less in need of biking as a mode of transportation as their workplaces are more accessible by walking, whereas men are more in a place to take advantage of bike sharing due to their longer commutes.
 
 ```{r include=FALSE, cache=FALSE}
 query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,300"
@@ -110,10 +111,10 @@ trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gend
 trips_plot
 ```
 
-This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
+  This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
 
 ##Does the gender distribution differ by age of riders?
-text
+  text
 
 ```{r, echo = FALSE, warning=FALSE}
 query<-"SELECT birth_year, gender, user_type,start_time, stop_time FROM trips
@@ -137,11 +138,18 @@ age_time_plot
 
 ```
 
-text
+  text
+
+##Does the gender distribution differ by station location?
+  Urban cycling advocates typically attribute reduced number of female ridership to [concerns about safety among car traffic](https://www.tandfonline.com/doi/abs/10.1080/15568318.2012.673694). Could the gender gap in Citi Bike users be due to these safety concerns? To examine this, we looked at the stations that saw the highest and lowest female to male ratio.
+
+FIARCHA'S GRAPH HERE
+
+  This graph demonstrates that Citi Bike stations in more congested neighborhoods like downtown Manhattan are predominantly used by men, whereas stations in residential neighborhoods like ___ see more female ridership.
 
 ---
 
 # Methodology
-The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
+  The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
 
-For the first plot depicting the overall distribution of Citi Bike users, a waffle plot was chosen to depict the gender gap in the bike sharing program. This plot was chosen because of its usefulness for placing increased emphasis on the part of the whole, therefore driving home the huge difference between men and women riders. The statistics for this table were taken from the “trips” table, where 100 random trips on March 29th, 2017 with data on the gender of the rider (some trips had no gender data) were extracted and a count of male and female riders were found. “AwesomeFont” was loaded from the “extrafont” package to change the squares in the waffle plot into glyphs of bicycles, to fit the theme of the blog post and to create a visualization that almost appears to be a crowd of bikes on a road. Look how many male bikers there are on the road! Look how few female! Wow!
+  For the first plot depicting the overall distribution of Citi Bike users, a waffle plot was chosen to depict the gender gap in the bike sharing program. This plot was chosen because of its usefulness for placing increased emphasis on the part of the whole, therefore driving home the huge difference between men and women riders. The statistics for this table were taken from the “trips” table, where 100 random trips on March 29th, 2017 with data on the gender of the rider (some trips had no gender data) were extracted and a count of male and female riders were found. “AwesomeFont” was loaded from the “extrafont” package to change the squares in the waffle plot into glyphs of bicycles, to fit the theme of the blog post and to create a visualization that almost appears to be a crowd of bikes on a road. Look how many male bikers there are on the road! Look how few female! Wow!
