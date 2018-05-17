@@ -80,12 +80,7 @@ chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c(
 chart
 ```
 
-<<<<<<< HEAD
-This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is dominated by male riders, accounting for almost three fourths of the trips taken. 
-=======
 So why is this? Using the Citi Bike data, we’ll be exploring several potential gendered trends in hope to gain insight into the cause of this gender gap.
-
->>>>>>> e1f6d3dc3471684e7ad772171778a165f5f94d41
 
 ## Does the gender distribution differ by duration of trip?
 Studies have demonstrated that [men, on average, have longer commutes than women](https://www.sciencedirect.com/science/article/pii/S0739885911000655). This could potentially be one of the factors causing the gap in NYC’s Citi Bike program and urban cycling at large--perhaps women are less in need of biking as a mode of transportation as their workplaces are more accessible by walking, whereas men are more in a place to take advantage of bike sharing due to their longer commutes.
@@ -112,17 +107,7 @@ trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gend
 trips_plot
 ```
 
-<<<<<<< HEAD
-This graph depicts the distribution of trip duration by gender. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be signifgant, thus providing little inisight into the causes or effects of the gender gap in the Citi Bike program.
-
-## Methodology
-The data we used for this project were drawn from multiple sources. The average in-state tuition and at four-year public institutions in 1969 through 2011 came from the [National Center for Education Statistics](https://nces.ed.gov/programs/digest/d12/tables/dt12_381.asp). Data on federal minimum wages from 1939 to present came from the [Department of Labor](https://www.dol.gov/whd/minwage/chart.htm). Berkley specific data came from [here](http://admissions.berkeley.edu/cost-of-attendance), Charlottesvilles specific data came from here, and Ann Arbor specific data came from [here](http://www.umich.edu/~bhlumrec/um-fees/1976_fees.pdf) and [here](http://ro.umich.edu/tuition/tuition-fees.php).
-
-We mapped dollars as a function of time to create space to examine, compare, and contrast our three variables as they all operate within these frames. Values were also adjusted for inflation to allow for ample comparison.
-We used two graph types throughout our post: the line chart and the bar graph.
-=======
 This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
->>>>>>> e1f6d3dc3471684e7ad772171778a165f5f94d41
 
 # Methodology
 The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
