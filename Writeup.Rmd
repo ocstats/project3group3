@@ -69,18 +69,23 @@ fonts()[grep("Awesome", fonts())]
   As urban biking as a mode of transportation has increased in popularity over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in New York City’s Citi Bike program, as well as many other urban bike sharing programs across America. This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
   
 ## What is overall gender distribution of Citi Bike Users?
+This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is heavily dominated by male riders, accounting for almost three fourths of the trips taken.
+
 ```{r, echo = FALSE}
 library(waffle)
 parts <- c(`Male (73%)`=73, `Female (27%)`=27)
 chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c("dodgerblue", "deeppink"),
        title="Citi Bike Users by Gender") + theme_fivethirtyeight() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.text = element_blank(),
-        axis.ticks.x = element_blank())+ labs(subtitle="1 square = 425 Riders")
+        axis.ticks.x = element_blank())
 chart
 ```
 
-This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is dominated by male riders, accounting for almost three fourths of the trips taken. 
+So why is this? Using the Citi Bike data, we’ll be exploring several potential gendered trends in hope to gain insight into the cause of this gender gap.
+
 
 ## Does the gender distribution differ by duration of trip?
+Studies have demonstrated that [men, on average, have longer commutes than women](https://www.sciencedirect.com/science/article/pii/S0739885911000655). This could potentially be one of the factors causing the gap in NYC’s Citi Bike program and urban cycling at large--perhaps women are less in need of biking as a mode of transportation as their workplaces are more accessible by walking, whereas men are more in a place to take advantage of bike sharing due to their longer commutes.
+
 ```{r include=FALSE, cache=FALSE}
 query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,300"
 
@@ -103,14 +108,9 @@ trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gend
 trips_plot
 ```
 
-This graph depicts the distribution of trip duration by gender. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be signifgant, thus providing little inisight into the causes or effects of the gender gap in the Citi Bike program.
+This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
 
-## Methodology
-The data we used for this project were drawn from multiple sources. The average in-state tuition and at four-year public institutions in 1969 through 2011 came from the [National Center for Education Statistics](https://nces.ed.gov/programs/digest/d12/tables/dt12_381.asp). Data on federal minimum wages from 1939 to present came from the [Department of Labor](https://www.dol.gov/whd/minwage/chart.htm). Berkley specific data came from [here](http://admissions.berkeley.edu/cost-of-attendance), Charlottesvilles specific data came from here, and Ann Arbor specific data came from [here](http://www.umich.edu/~bhlumrec/um-fees/1976_fees.pdf) and [here](http://ro.umich.edu/tuition/tuition-fees.php).
+# Methodology
+The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
 
-We mapped dollars as a function of time to create space to examine, compare, and contrast our three variables as they all operate within these frames. Values were also adjusted for inflation to allow for ample comparison.
-We used two graph types throughout our post: the line chart and the bar graph.
-
-We used a line chart to illustrate our data because it accentuates trends by following a variable over time. Furthermore, a line chart helps the reader see how these trends move or don't move together and switch their order.  The information that our graph seeks to convey comes from over time, therefore we decided to use a line graph to connect our cases.The average cost of tuition against summer wages and the average rate of growth of college tuition are time based. Our decision to use line charts was also influenced by our use of averages. Because we are working with averages, we did not need to use a scatter plot examine the trend over individual cases of college tuition prices and wages to highlight the trend.
-
-In all of our graphics wanted to choose color schemes that emphasised contrast among all the variables being measured. In our first graphic, however, we took extra precaution to ensure clarity. We came to a consensus to use bars to illustrate summer wages to keep from using too many lines and easily convey information. This also helps us focus how we aim to position the all of the trends relative to one another and gives a visual sense of what the stagnation phenomena looks like. For our second graphic, We used a stacked bar graph to create two comparisons, one comparing the cost of tuition among three individual cases (not averages) at two specific points in time. We wanted to create bold contrast between 1976 and 2014, which is why we used grey and red for the bar fill.In our third graphic, we only compared two trends, which makes it important to use  contrasting colors for clarity and a theme that did not add to line confusion. In each graphic, we selected our theme based on its ability to help focus on the data and not distract. 
+For the first plot depicting the overall distribution of Citi Bike users, a waffle plot was chosen to depict the gender gap in the bike sharing program. This plot was chosen because of its usefulness for placing increased emphasis on the part of the whole, therefore driving home the huge difference between men and women riders. The statistics for this table were taken from the “trips” table, where 100 random trips on March 29th, 2017 with data on the gender of the rider (some trips had no gender data) were extracted and a count of male and female riders were found. “AwesomeFont” was loaded from the “extrafont” package to change the squares in the waffle plot into glyphs of bicycles, to fit the theme of the blog post and to create a visualization that almost appears to be a crowd of bikes on a road. Look how many male bikers there are on the road! Look how few female! Wow!
