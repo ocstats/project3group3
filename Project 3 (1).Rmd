@@ -81,7 +81,7 @@ db <- db %>% dbGetQuery(joint.query) %>% collect() %>%
   geom_point(aes(color = femaletomale, alpha = 0.3)) +
   scale_x_continuous("Longitude", limits = c(-74.2, -73.8)) +
   scale_y_continuous("Latitude", limits = c(40.65, 40.825)) +
-  scale_color_gradient(low = "blue", high = "red")
+  scale_color_gradient(low = "dodgerblue", high = "deeppink")
 
 db
 ```

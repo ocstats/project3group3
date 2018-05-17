@@ -203,7 +203,10 @@ trip_times
 trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Duration in Minutes") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
                          breaks=c("0", "1"),
                          labels=c("Male", "Female"),
-                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender")
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender") +
+  stat_summary(geom="text", fun.y=median,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.50), size=3.5)
 
 trips_plot
 ```

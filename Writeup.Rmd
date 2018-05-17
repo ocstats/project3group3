@@ -112,7 +112,7 @@ trips_plot
 
 This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
 
-## Does the gender distribution differ by age of riders?
+##Does the gender distribution differ by age of riders?
 text
 
 ```{r, echo = FALSE, warning=FALSE}
