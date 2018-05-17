@@ -109,6 +109,30 @@ trips_plot
 
 This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
 
+## Does the gender distribution differ by age of riders?
+text
+
+```{r, echo = FALSE, warning=FALSE}
+query<-"SELECT birth_year, gender, user_type,start_time, stop_time FROM trips
+WHERE start_time LIMIT 0,100"
+
+query<-db %>% dbGetQuery(query) %>% collect()
+
+age_time<-query %>% mutate(age=2017-birth_year, row_num=row_number(),trip_length = difftime(stop_time, start_time, units = "mins"), men=gender==1, women=gender==2, gender = as.character(gender))%>% filter(age !=2017, gender !=0) %>% filter(birth_year !=0,age!= 131)
+
+##same labeling issues
+age_time_plot <- age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+xlab(" ")+ylab("Age")+ scale_fill_manual(name="Gender",
+                         breaks=c("1", "2"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender")
+
+age_time_plot
+
+
+```
+
+text
+
 # Methodology
 The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
 
