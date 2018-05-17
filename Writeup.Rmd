@@ -143,7 +143,50 @@ age_time_plot
 ##Does the gender distribution differ by station location?
   Urban cycling advocates typically attribute reduced number of female ridership to [concerns about safety among car traffic](https://www.tandfonline.com/doi/abs/10.1080/15568318.2012.673694). Could the gender gap in Citi Bike users be due to these safety concerns? To examine this, we looked at the stations that saw the highest and lowest female to male ratio.
 
-FIARCHA'S GRAPH HERE
+```{r, echo = FALSE, warning=FALSE}
+
+joint.query <- '(SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id
+ORDER BY two_pct desc
+LIMIT 0,10)
+UNION
+(SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id
+ORDER BY one_pct desc
+LIMIT 0,10)'
+
+db <- db %>% dbGetQuery(joint.query) %>% collect() %>% 
+  ggplot(aes(x = lon, y = lat)) +
+  geom_point(aes(color = femaletomale, alpha = 0.3)) +
+  scale_x_continuous("Longitude", limits = c(-74.2, -73.8)) +
+  scale_y_continuous("Latitude", limits = c(40.65, 40.825)) +
+  scale_color_gradient(low = "dodgerblue", high = "deeppink") +
+  geom_text(x = -74.1, y = 40.775, label = "Manhattan") +
+  geom_text(x = -73.85, y = 40.75, label = "Queens") +
+  geom_text(x = -73.9, y = 40.6625, label = "Brooklyn") +
+  geom_curve(x = -74, xend = -73.9625, y = 40.7, yend = 40.725, curvature = 0.01) +
+  geom_curve(x = -73.9625, xend = -73.925, y = 40.725, yend = 40.7875, curvature = 0.01) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ylab("Longitude") + xlab("Latitude") + ggtitle("Stations by Gender") + labs(subtitle="Plot depicts map of NYC") + scale_fill_discrete(name="Female to Male Ratio")
+
+db
+```
 
   This graph demonstrates that Citi Bike stations in more congested neighborhoods like downtown Manhattan are predominantly used by men, whereas stations in residential neighborhoods like ___ see more female ridership.
 
