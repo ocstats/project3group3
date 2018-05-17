@@ -244,7 +244,7 @@ age_time<-query %>% mutate(age=2017-birth_year, row_num=row_number(),trip_length
 age_time_plot <- age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+xlab(" ")+ylab("Age")+ scale_fill_manual(name="Gender",
                          breaks=c("1", "2"),
                          labels=c("Male", "Female"),
-                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender")
+                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender") + scale_y_continuous(breaks = c(0,10,20,25,30, 35, 40, 45, 50, 55, 60 , 65, 70 , 75))
 
 age_time_plot
 
