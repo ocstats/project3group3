@@ -10,7 +10,7 @@ output:
 urlcolor: blue
 ---
 #####<span style="color:red">DISCLAIMER</span>
-We don’t know how the gender data in the database used for this post was collected, so it’s unclear if our data reflects identified gender or gender assigned at birth, hence why don’t make the distinction in this presentation. We acknowledge the problematic nature of drawing conlculsions from data that whose collection methods we don't have a full understanding of, as well as the problematic nature of a coding gender as a binary variable as that excludes people who idenitfy outside the gender binary. However, we must work with the data we have avaliable, and urge data scientests in the future to be more transparent about their data collection methods and make space for gender diversity within their data.
+We don’t know how the gender data in the database used for this post was collected, so it’s unclear if our data reflects identified gender or gender assigned at birth, hence why don’t make the distinction in this presentation. We acknowledge the problematic nature of drawing conlculsions from data that whose collection methods we don't have a full understanding of, as well as the problematic nature of a coding gender as a binary variable as that excludes people who idenitfy outside the gender binary. However, we must work with the data we have avaliable, and urge data scientests in the future to be more transparent about their data collection methods and make space for gender diversity within their data collection efforts.
 
 ```{r include=FALSE, cache=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -66,7 +66,7 @@ fonts()[grep("Awesome", fonts())]
 ```
 
 ## Introduction
-Cycling has seen an impressive boom in recent years, with more Americans than ever hopping on the saddle of a bike and hitting the road. Movements have spurred across the country encouraging citizens to opt for two wheels over four—[especially in major US cities like New York City](https://medium.com/reclaim-magazine). But as urban biking as a mode of transportation has increased in popularity in America over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in New York City’s Citi Bike program, with [less than 25 percent of all Citi Bike trips taken by women](https://wagner.nyu.edu/impact/research/publications/citi-bike-first-two-years). This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
+Cycling has seen an impressive boom in recent years, with more Americans than ever hopping on the saddle of a bike and hitting the road. Movements have spurred across the country encouraging citizens to opt for two wheels over four—[especially in major US cities like New York City](https://medium.com/reclaim-magazine). But as urban biking as a mode of transportation has increased in popularity in America over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in NYCs Citi Bike program, with [less than 25 percent of all Citi Bike trips taken by women](https://wagner.nyu.edu/impact/research/publications/citi-bike-first-two-years). This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
 
   
 ## What is overall gender distribution of Citi Bike Users?
@@ -114,7 +114,7 @@ trips_plot
   This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
 
 ##Does the gender distribution differ by age of riders?
-  text
+It’s possible that the gender distribution of Citi Bike users varies by age, perhaps with less younger women taking to the streets than young men, which could point to concerns about young women being alone on city streets. There could also perhaps be less older women than older men, as older women are typically burdened with more familial tasks that would prevent one from using bikes as mode of transportation (i.e.; child care and shopping for a household).
 
 ```{r, echo = FALSE, warning=FALSE}
 query<-"SELECT birth_year, gender, user_type,start_time, stop_time FROM trips
@@ -138,7 +138,7 @@ age_time_plot
 
 ```
 
-  text
+This boxplot depicts the distribution of ages by gender. The median age for women does tend to be lower than the median for men, perhaps pointing to older women’s household duties preventing them from opting for two wheel transportation, but this effect does not seem to be hugely significant. As such, we can draw no real conclusions from this plot.
 
 ##Does the gender distribution differ by station location?
   Urban cycling advocates typically attribute reduced number of female ridership to [concerns about safety among car traffic](https://www.tandfonline.com/doi/abs/10.1080/15568318.2012.673694). Could the gender gap in Citi Bike users be due to these safety concerns? To examine this, we looked at the stations that saw the highest and lowest female to male ratio.
