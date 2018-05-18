@@ -188,7 +188,7 @@ db <- db %>% dbGetQuery(joint.query) %>% collect() %>%
 db
 ```
 
-This plot, which depicts a coordinate map of NYC, demonstrates that Citi Bike stations in more congested neighborhoods like downtown Manhattan are predominantly used by men, whereas stations in residential neighborhoods in the outer Boroughs see more female ridership, validating the claim that women tend to be wary of cycling in areas with less safety among car traffic. This gender distribution by station likely points to one of the main causes of the gender gap in urban cycling--safety?
+This plot, which depicts a coordinate map of NYC, demonstrates that Citi Bike stations in more congested neighborhoods like  Manhattan are predominantly used by men, whereas stations in neighborhoods in the outer boroughs that receive less traffic than Manhattan does see more female ridership, validating the claim that women tend to be wary of cycling in areas with less safety among car traffic. This gender distribution by station likely points to one of the main causes of the gender gap in urban cycling--safety?
 
 So how do we fix this and get more women on the road? Infrastructure. Bike infrastructure networks in America are still neither robust enough nor connected enough to ensure that commuters can feel safe on the roads. In Midtown Manhattan, for instance, there is a noticeable lack of crosstown bike lanes on the streets north of 23rd all the way up to Central Park at 59th, and the handful of bike lanes on the north-south avenues are often clogged with cars or other obstructions. By adding more bike lanes and other bike safety measures, we would likely see an increase in female ridership in these areas.
 
