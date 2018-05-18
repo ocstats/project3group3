@@ -1,0 +1,96 @@
+---
+title: "project 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dbplyr)  ## Note the 'b'; this is not dplyr
+library(mdsr)    ## Package for our book
+library(RMySQL)  ## Standard R/SQL interface package
+db <- dbConnect_scidb("citibike")
+library(dplyr)
+```
+
+```{sql, connection = db}
+SELECT * FROM station_summary
+LIMIT 0,10
+```
+
+```{r}
+db <- dbConnect_scidb("citibike")
+
+query <- 'SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id'
+
+db <- db %>% dbGetQuery(query) %>% collect() %>% 
+  ggplot(aes(x = lon, y = lat)) +
+  geom_point(aes(color = femaletomale, alpha = 0.3)) +
+  scale_x_continuous("Longitude", limits = c(-74.2, -73.8)) +
+  scale_y_continuous("Latitude", limits = c(40.65, 40.825)) +
+  scale_color_gradient(low = "blue", high = "red")
+
+db
+```
+
+```{r}
+
+joint.query <- '(SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id
+ORDER BY two_pct desc
+LIMIT 0,10)
+UNION
+(SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id
+ORDER BY one_pct desc
+LIMIT 0,10)'
+
+db <- db %>% dbGetQuery(joint.query) %>% collect() %>% 
+  ggplot(aes(x = lon, y = lat)) +
+  geom_point(aes(color = femaletomale, alpha = 0.3)) +
+  scale_x_continuous("Longitude", limits = c(-74.2, -73.8)) +
+  scale_y_continuous("Latitude", limits = c(40.65, 40.825)) +
+  scale_color_gradient(low = "blue", high = "red") +
+  geom_text(x = -74.1, y = 40.775, label = "Manhattan") +
+  geom_text(x = -73.85, y = 40.75, label = "Queens") +
+  geom_text(x = -73.9, y = 40.6625, label = "Brooklyn") +
+  geom_curve(x = -74, xend = -73.9625, y = 40.7, yend = 40.725, curvature = 0.01) +
+  geom_curve(x = -73.9625, xend = -73.925, y = 40.725, yend = 40.7875, curvature = 0.01)
+
+db
+```
+
+
+
+
+

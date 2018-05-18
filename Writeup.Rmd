@@ -1,6 +1,7 @@
 ---
-title: "This Will Be the Final Writeup!"
-author: "NAMES"
+title: "Closing the Gender Gap in Urban Cycling"
+subtitle: "A look at gendered patternsin NYC’s Citi Bike System"
+author: "Ian Dinsmore, Fiachra McDonagh, Lexi Nieves, Em Webster"
 date: "05/19/2018"
 output:
   html_document: default
@@ -8,12 +9,8 @@ output:
     number_sections: yes
 urlcolor: blue
 ---
-
-
-******************
-IGNORE ALL THE OTHER STUFF BELOW RIGHT NOW, THIS IS THE OLD MARKUP FILE FROM MY PROJ ONE AND IM GONNA USE IT TO MODEL OUR WRITEUP
-******************
-
+#####<span style="color:red">DISCLAIMER</span>
+We don’t know how the gender data in the database used for this post was collected, so it’s unclear if our data reflects identified gender or gender assigned at birth, hence why don’t make the distinction in this presentation. We acknowledge the problematic nature of drawing conlculsions from data that whose collection methods we don't have a full understanding of, as well as the problematic nature of a coding gender as a binary variable as that excludes people who idenitfy outside the gender binary. However, we must work with the data we have avaliable, and urge data scientests in the future to be more transparent about their data collection methods and make space for gender diversity within their data.
 
 ```{r include=FALSE, cache=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -24,225 +21,178 @@ knitr::opts_chunk$set(error = TRUE)
 ```
 
 ```{r include=FALSE, cache=FALSE}
-library(tidyverse)
+library(dbplyr)
+library(mdsr)
+library(RMySQL)
 library(readr)
 library(ggthemes)
+library(waffle)
+library(extrafont)
 ```
 
 ```{r include=FALSE, cache=FALSE}
-tuition_wage <- read_csv("average-tuition-wage.csv")
+db <- dbConnect_scidb("citibike")
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <- ggplot(tuition_wage, aes(x = year))
+query <- "
+SELECT 
+user_type,
+gender
+FROM trips AS t
+WHERE gender = 1 OR gender = 2
+LIMIT 0,100
+"
+query <- db %>% dbGetQuery(query) %>% collect()
+genderpct <- as.data.frame(query)
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <- cost_plot +
-  geom_bar(
-    stat = "identity",
-    aes(y = summer_pay),
-     fill = "darkseagreen3", color = "white")
+genderpct$gender <- as.factor(genderpct$gender)
+var <- genderpct$gender
+nrows <- 10
+df <- expand.grid(y = 1:nrows, x = 1:nrows)
+categ_table <- round(table(var) * ((nrows*nrows)/(length(var))))
+categ_table
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <- 
-  cost_plot +
-  geom_line(aes(y = public_4yr_instate),
-    color = "firebrick2")
+loadfonts()
+fonts()[grep("Awesome", fonts())]
 ```
 
 ```{r include=FALSE, cache=FALSE}
-cost_plot <-
-  cost_plot +
-  geom_line(aes(y = private_4yr),
-    color = "dodgerblue2")
-## anyone know how to mess with this so it is more readable?
-  ## This is a start but ill continue to the work to make it cute and journalism worthy 
+fonts()[grep("Awesome", fonts())]
 ```
 
-```{r include=FALSE, cache=FALSE}
-# Maybe no subtitle and be more specific in the headings on graph?
-
-cost_plot <- cost_plot + labs( x = "Year", y = "Dollars") + ggtitle("Average Tuition Fees at Four Year Institutions vs. 
-Minimum Wage Summer Earnings", subtitle = "Public Instate and Private Schools" ) + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.subtitle = element_text(hjust = 0.5))
-```
-
-
-```{r include=FALSE, cache=FALSE}
-cost_plot <-
-  cost_plot +
-  geom_bar(
-    stat = "identity",
-    aes(
-      y = ifelse(
-        year == 1988,
-        public_4yr_instate,
-        0
-      )
-    ),
-     fill = "firebrick2",
-    color = "white"
-  )
-```
-
-```{r include=FALSE, cache=FALSE}
-cost_plot <-
-  cost_plot +
-  geom_bar(
-    stat = "identity",
-    aes(
-      y = ifelse(
-        year == 1969,
-        private_4yr,
-        0
-      )
-    ),
-     fill = "dodgerblue2",
-    color = "white"
-  )
-```
-
-```{r include=FALSE, cache=FALSE}
-cost_plot <- cost_plot +
-    geom_text(
-    x = 1975, y = 7000, 
-    label = "Private Schools",
-    colour = "dodgerblue2"
-    ) +
-  geom_text(
-    x = 1995, y = 6000, 
-    label = "Public Schools in State ",
-    colour = "firebrick2"
-    )
-```
-
-```{r include=FALSE, cache=FALSE}
-library(readr)
-library(scales)
-schoolname <- read_csv("specific-schools-edited.csv")
-```
-
-```{r, echo = FALSE}
-name_plot <- ggplot(schoolname, aes(x=university, y = (farm_min_wage_1976*480)/cost_1976)) + geom_bar(stat="identity", position="dodge", aes(fill=factor(Year))) + scale_y_continuous(labels=percent_format()) + xlab("University") + ylab("Percetage of University Fees")
-name_plot <- name_plot + scale_fill_manual(values = c("firebrick1", "firebrick")) + guides(fill=guide_legend(title="Year"))
-```
-
-```{r include=FALSE, cache=FALSE}
-name_plot <- name_plot + ggtitle("Percentage of University Fees that Summer Wage Covers") + theme(plot.title = element_text(hjust = 0.5)) + theme(plot.subtitle = element_text(hjust = 0.5)) 
-```
 ## Introduction
-Many politicians often turn back time to the "golden days" when they were able to pay the entirety of their college tuitions with their summer wages. We decided to put this claim into context. The 1970s marks a period in economic history that begins a general wage stagnation, which is when the cost of goods and services exceeds one's ability to work for it and afford it The cost of attending higher education is not exempt from this trend, even public institutions. Public four year institutions aim to make higher education more accessible for economically disadvantaged students, yet in recent years tuition at public institutions has risen so sharply that being able to work one's self through college has become less realistic than in the 1970s. 
+Cycling has seen an impressive boom in recent years, with more Americans than ever hopping on the saddle of a bike and hitting the road. Movements have spurred across the country encouraging citizens to opt for two wheels over four—[especially in major US cities like New York City](https://medium.com/reclaim-magazine). But as urban biking as a mode of transportation has increased in popularity in America over the years, a significant gender gap has been emerging, with [just one is four bikers identifying as female](https://nhts.ornl.gov/2009/pub/stt.pdf). This pattern can clearly be seen in New York City’s Citi Bike program, with [less than 25 percent of all Citi Bike trips taken by women](https://wagner.nyu.edu/impact/research/publications/citi-bike-first-two-years). This is a serious issue, as transportation is one of the biggest household expenses in America and [women are more likely to be economically disadvantaged than men](https://www.americanprogress.org/issues/women/reports/2008/10/08/5103/the-straight-facts-on-women-in-poverty/). Cycling could provide a greatly needed route for women to cut transportation costs, but for some reason women are tending to stay away from the bike lanes. Why is this? With the extensive data collected by NYC’s Citi Bike system, we can hope to gain insight into the gendered trends in urban cycling and to use those insights to propose solutions to the gender gap in biking.
 
-## Tuition is Rising Faster than Minimum Wage
-The graph above charts the increase of summer earnings over time (calculated as the the federal hourly minimum wage for 12 weeks at 40 hours a week) against the increase of public and private four year college tuition in the United States. We can see that prior to 1988, one could cover an entire year of tuition at a four year public institution with summer wages. However, due to tuition rising faster than the federal minimum wage, public higher education becomes inaccessible to those relying on minimum wage jobs around the 1990s. Private education, on the other hand, was never attainable with a summer's wage during the time frame of the data.
-
-```{r, echo = FALSE}
-library(ggthemes)
-cost_plot <- cost_plot + theme_gdocs()
-cost_plot
-```
-
-## How Much College Can One Pay For With Minimum Wage?
-This graph depicts three well-known public universities and the percentage of university fees covered by summer wages. We focused on public universities because it lies at the nexus of the claim that public education is accessible for everyone. While this claim was true in 1976, it no longer stands in 2014. Our previous graph focused on broader trends whereas this graph hits the numbers home by focusing on three distinguished universities. 
+  
+## What is overall gender distribution of Citi Bike Users?
+  This graph depicts the distribution of Citi Bike trips by gender. As one can clearly see, the Citi Bike program is heavily dominated by male riders, accounting for almost three fourths of the trips taken.
 
 ```{r, echo = FALSE}
-name_plot <- name_plot + theme_gdocs(base_size = 8)
-name_plot
+library(waffle)
+parts <- c(`Male (73%)`=73, `Female (27%)`=27)
+chart <- waffle(parts, rows=5, use_glyph = "bicycle", glyph_size = 6,colors = c("dodgerblue", "deeppink"),
+       title="Citi Bike Users by Gender") + theme_fivethirtyeight() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.text = element_blank(),
+        axis.ticks.x = element_blank())
+chart
 ```
 
-## Average Rate of Growth
-This graph displays the marginal growth of Tuition and Summer Pay depicting the comparison of Tuition fees and Summer Pay marginal growth.
+  So why is this? Using the Citi Bike data, we’ll be exploring several potential gendered trends in hope to gain insight into the cause of this gender gap.
 
-In the 1980's there is little to no increase in summer pay, but tuition prices continued to grow. Graph 0.1 calculated the amount of tuition that summer pay can account for. In the year 1988, summer pay stopped being able to cover a year's tuition. This, in part, is due to the previous years lacking of summer pay growth. It was also in 1988 that the summer pay began to grow. The graph does not show trends between the summer pay and tuition growth. There is, a similarity between the average tuition at both private and public institutions. The average marginal increases at all universities seemed to be similarly proportional. It was not until the year 2000 where the growth patterns differentiate. 
+## Does the gender distribution differ by duration of trip?
+  Studies have demonstrated that [men, on average, have longer commutes than women](https://www.sciencedirect.com/science/article/pii/S0739885911000655). This could potentially be one of the factors causing the gap in NYC’s Citi Bike program and urban cycling at large--perhaps women are less in need of biking as a mode of transportation as their workplaces are more accessible by walking, whereas men are more in a place to take advantage of bike sharing due to their longer commutes.
 
-```{r, echo = FALSE, message=F, warning=F}
-library(tidyverse)
-library(readr)
-plotter <- read_csv("average-tuition-wage.csv")
-#view(plotter)
+```{r include=FALSE, cache=FALSE}
+query <- "SELECT start_time, stop_time, gender FROM trips LIMIT 0,300"
 
-#For Loop to change data for Private_4yr
-z = plotter[2, "private_4yr"]
-for (i in 2 : 44)
-{
-  #Copy over years
-  y = z
-  x = plotter[i+1, 2]
-  omega = (x/y)*100
-  #print(omega)
-  plotter[i-1, 2] = omega
-  #Sets a variable buffer to save the value of x
-  z = x
-}
-plotter[1,2] = 100 #Sets the original data to be 100%
-
-#For Loop to change data for Public_4yr
-z = plotter[2, "public_4yr_instate"]
-for (i in 2 : 44)
-{
-  #Copy over years
-  y = z
-  x = plotter[i+1, 3]
-  omega = (x/y)*100
-  #print(omega)
-  plotter[i-1, 3] = omega
-  #Sets a variable buffer to save the value of x
-  z = x
-}
-plotter[1,3] = 100 #Sets the original data to be 100%
-
-
-#For Loop to change data for Summer_Pay
-z = plotter[2, "summer_pay"]
-for (i in 2 : 44)
-{
-  #Copy over years
-  y = z
-  x = plotter[i+1, 5]
-  omega = (x/y)*100
-  #print(omega)
-  plotter[i-1, 5] = omega
-  #Sets a variable buffer to save the value of x
-  z = x
-}
-plotter[1,5] = 100 #Sets the original data to be 100%
-
-#Initializes the graph and sets the X axis to be the year
-percent_growth <- ggplot(plotter, aes(x = year)) +
-  labs( x = "Year", y = "Percent Growth %") +
-  ggtitle("Average Percent Growth of Tuition", subtitle = "Public Instate and Private Schools")
-
-#Adds Slopes From Growth to Graph
-percent_growth <- percent_growth +
-  geom_line(aes(y = private_4yr), color = "firebrick2") +
-  geom_line(aes(y = public_4yr_instate), color = "dodgerblue2") +
-  geom_line(stat = "identity", aes(y = summer_pay), color = "darkseagreen3") +
-  geom_text(
-    x = 1975, y = 125, 
-    label = "Private 4yr",
-    colour = "firebrick2"
-    ) +
-  geom_text(
-    x = 1985, y = 125, 
-    label = "Public 4yr",
-    colour = "dodgerblue2"
-    ) +
-  geom_text(
-    x = 1995, y = 125,
-    label = "Summer Pay",
-    colour = "darkseagreen3"
-  )
-percent_growth <- percent_growth + theme_gdocs()
-percent_growth
+trip_times <- db %>% dbGetQuery(query) %>% collect()
+trip_times
 ```
 
-## Methodology
-The data we used for this project were drawn from multiple sources. The average in-state tuition and at four-year public institutions in 1969 through 2011 came from the [National Center for Education Statistics](https://nces.ed.gov/programs/digest/d12/tables/dt12_381.asp). Data on federal minimum wages from 1939 to present came from the [Department of Labor](https://www.dol.gov/whd/minwage/chart.htm). Berkley specific data came from [here](http://admissions.berkeley.edu/cost-of-attendance), Charlottesvilles specific data came from here, and Ann Arbor specific data came from [here](http://www.umich.edu/~bhlumrec/um-fees/1976_fees.pdf) and [here](http://ro.umich.edu/tuition/tuition-fees.php).
+```{r include=FALSE, cache=FALSE}
+trip_times <- trip_times %>% filter(gender != 2) %>% mutate(trip_length = difftime(stop_time, start_time, units = "mins"), row_num = row_number()) 
+trip_times <- trip_times %>% mutate(gender = as.character(gender))
+trip_times
+```
 
-We mapped dollars as a function of time to create space to examine, compare, and contrast our three variables as they all operate within these frames. Values were also adjusted for inflation to allow for ample comparison.
-We used two graph types throughout our post: the line chart and the bar graph.
+```{r, echo = FALSE, warning=FALSE}
+trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Duration in Minutes") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
+                         breaks=c("0", "1"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender") +
+  stat_summary(geom="text", fun.y=median,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.50), size=3.5)
 
-We used a line chart to illustrate our data because it accentuates trends by following a variable over time. Furthermore, a line chart helps the reader see how these trends move or don't move together and switch their order.  The information that our graph seeks to convey comes from over time, therefore we decided to use a line graph to connect our cases.The average cost of tuition against summer wages and the average rate of growth of college tuition are time based. Our decision to use line charts was also influenced by our use of averages. Because we are working with averages, we did not need to use a scatter plot examine the trend over individual cases of college tuition prices and wages to highlight the trend.
+trips_plot
+```
 
-In all of our graphics wanted to choose color schemes that emphasised contrast among all the variables being measured. In our first graphic, however, we took extra precaution to ensure clarity. We came to a consensus to use bars to illustrate summer wages to keep from using too many lines and easily convey information. This also helps us focus how we aim to position the all of the trends relative to one another and gives a visual sense of what the stagnation phenomena looks like. For our second graphic, We used a stacked bar graph to create two comparisons, one comparing the cost of tuition among three individual cases (not averages) at two specific points in time. We wanted to create bold contrast between 1976 and 2014, which is why we used grey and red for the bar fill.In our third graphic, we only compared two trends, which makes it important to use  contrasting colors for clarity and a theme that did not add to line confusion. In each graphic, we selected our theme based on its ability to help focus on the data and not distract. 
+  This graph depicts the distribution of trip duration by gender to determine if men are indeed traveling more. Men seem to have a slightly higher trip duration median than women, but the difference does not appear to be significant, thus providing little insight into the causes or effects of the gender gap in the Citi Bike program. However, it should be noted that we are unable to parse from the datasets what the purpose of the trips were, so this does not represent work commutes exclusively and it’s possible that riders (of both gender) opt for different modes of transportation for longer trips. As such, any conclusions drawn from this plot should be taken with a grain of salt.
+
+##Does the gender distribution differ by age of riders?
+  text
+
+```{r, echo = FALSE, warning=FALSE}
+query<-"SELECT birth_year, gender, user_type,start_time, stop_time FROM trips
+WHERE start_time LIMIT 0,100"
+
+query<-db %>% dbGetQuery(query) %>% collect()
+
+age_time<-query %>% mutate(age=2017-birth_year, row_num=row_number(),trip_length = difftime(stop_time, start_time, units = "mins"), men=gender==1, women=gender==2, gender = as.character(gender))%>% filter(age !=2017, gender !=0) %>% filter(birth_year !=0,age!= 131)
+
+##same labeling issues
+age_time_plot <- age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+xlab(" ")+ylab("Age")+ scale_fill_manual(name="Gender",
+                         breaks=c("1", "2"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender") +
+  stat_summary(geom="text", fun.y=median,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.50), size=3.5)
+
+age_time_plot
+
+
+```
+
+  text
+
+##Does the gender distribution differ by station location?
+  Urban cycling advocates typically attribute reduced number of female ridership to [concerns about safety among car traffic](https://www.tandfonline.com/doi/abs/10.1080/15568318.2012.673694). Could the gender gap in Citi Bike users be due to these safety concerns? To examine this, we looked at the stations that saw the highest and lowest female to male ratio.
+
+```{r, echo = FALSE, warning=FALSE}
+
+joint.query <- '(SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id
+ORDER BY two_pct desc
+LIMIT 0,10)
+UNION
+(SELECT
+start_station_id,
+sum(if(gender = 0, 1, 0)) / sum(1) AS zero_pct,
+sum(if(gender = 1, 1, 0)) / sum(1) AS one_pct,
+sum(if(gender = 2, 1, 0)) / sum(1) AS two_pct,
+(sum(if(gender = 2, 1, 0)) / sum(1)) / (sum(if(gender = 1, 1, 0)) / sum(1)) AS femaletomale,
+s.lat, 
+s.lon
+FROM trips AS t
+JOIN station_summary AS s ON t.start_station_id = s.station_id
+GROUP BY start_station_id
+ORDER BY one_pct desc
+LIMIT 0,10)'
+
+db <- db %>% dbGetQuery(joint.query) %>% collect() %>% 
+  ggplot(aes(x = lon, y = lat)) +
+  geom_point(aes(color = femaletomale, alpha = 0.3)) +
+  scale_x_continuous("Longitude", limits = c(-74.2, -73.8)) +
+  scale_y_continuous("Latitude", limits = c(40.65, 40.825)) +
+  scale_color_gradient(low = "dodgerblue", high = "deeppink") +
+  geom_text(x = -74.1, y = 40.775, label = "Manhattan") +
+  geom_text(x = -73.85, y = 40.75, label = "Queens") +
+  geom_text(x = -73.9, y = 40.6625, label = "Brooklyn") +
+  geom_curve(x = -74, xend = -73.9625, y = 40.7, yend = 40.725, curvature = 0.01) +
+  geom_curve(x = -73.9625, xend = -73.925, y = 40.725, yend = 40.7875, curvature = 0.01) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ylab("Longitude") + xlab("Latitude") + ggtitle("Top 16 Stations by Gender") + labs(subtitle="Plot depicts coordinate map of NYC") + scale_fill_discrete(name="Female to Male Ratio")
+
+db
+```
+
+  This graph demonstrates that Citi Bike stations in more congested neighborhoods like downtown Manhattan are predominantly used by men, whereas stations in residential neighborhoods like ___ see more female ridership.
+
+---
+
+# Methodology
+  The database utilized for this blog was the “citibike” database accessed via SQL from the scidb server. The tables used were “trips” and “station_summary”.
+
+  For the first plot depicting the overall distribution of Citi Bike users, a waffle plot was chosen to depict the gender gap in the bike sharing program. This plot was chosen because of its usefulness for placing increased emphasis on the part of the whole, therefore driving home the huge difference between men and women riders. The statistics for this table were taken from the “trips” table, where 100 random trips on March 29th, 2017 with data on the gender of the rider (some trips had no gender data) were extracted and a count of male and female riders were found. “AwesomeFont” was loaded from the “extrafont” package to change the squares in the waffle plot into glyphs of bicycles, to fit the theme of the blog post and to create a visualization that almost appears to be a crowd of bikes on a road. Look how many male bikers there are on the road! Look how few female! Wow!

@@ -10,6 +10,7 @@ library(dbplyr)
 library(mdsr)
 library(RMySQL)
 library(readr)
+library(ggthemes)
 ```
 ```{r}
 db <- dbConnect_scidb("citibike")
@@ -199,17 +200,56 @@ trip_times
 ```
 
 ```{r}
-trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Length in Minutes") + xlab("Gender") +ylim(c(0,65)) + scale_fill_discrete(name="Gender",
+trips_plot <- trip_times %>% ggplot(aes(x = gender, y = trip_length, fill = gender )) + geom_boxplot() + ylab("Trip Duration in Minutes") + xlab(" ") + ylim(c(0,65)) + scale_fill_manual(name="Gender",
                          breaks=c("0", "1"),
-                         labels=c("Male", "Female")) 
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Gender") +
+  stat_summary(geom="text", fun.y=median,
+               aes(label=sprintf("%1.1f", ..y..)),
+               position=position_nudge(x=0.50), size=3.5)
 
 trips_plot
 ```
 
+**Age by Trip duration
+#```{r}
+
+query<-"SELECT birth_year, gender, user_type,start_time, stop_time FROM trips
+WHERE start_time LIMIT 0,100"
+
+query<-db %>% dbGetQuery(query) %>% collect()
+
+age_time<-query %>% mutate(age=2017-birth_year, row_num=row_number(),trip_length = difftime(stop_time, start_time, units = "mins"), men=gender==1, women=gender==2, gender = as.character(gender))%>% filter(age !=2017, gender !=0) %>% filter(birth_year !=0,age!= 131)
+##Can't get the right color or description for male and female labels 1 should be male 2 should be female
+age_time_plot<-age_time%>%ggplot(aes(x=trip_length, y=age, color=gender))+geom_point()+geom_smooth()+ xlab("Trip Duration in Minutes")+ ylab("Age in 2017")+scale_fill_manual(name="Gender",
+                         breaks=c("1", "2"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink")) + theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Trip Duration by Age and Gender")
+
+age_time_plot
 
 
+#```
+
+**Age by gender box plot 
+```{r}
+query<-"SELECT birth_year, gender, user_type,start_time, stop_time FROM trips
+WHERE start_time LIMIT 0,100"
+
+query<-db %>% dbGetQuery(query) %>% collect()
+
+age_time<-query %>% mutate(age=2017-birth_year, row_num=row_number(),trip_length = difftime(stop_time, start_time, units = "mins"), men=gender==1, women=gender==2, gender = as.character(gender))%>% filter(age !=2017, gender !=0) %>% filter(birth_year !=0,age!= 131)
+
+##same labeling issues
+age_time_plot <- age_time %>%ggplot(aes(x= gender, y=age, fill=gender))+geom_boxplot()+xlab(" ")+ylab("Age")+ scale_fill_manual(name="Gender",
+                         breaks=c("1", "2"),
+                         labels=c("Male", "Female"),
+                         values = c("dodgerblue", "deeppink"))+theme_fivethirtyeight() +theme(axis.title=element_text(size=12)) + ggtitle("Age by Gender") + scale_y_continuous(breaks = c(0,10,20,25,30, 35, 40, 45, 50, 55, 60 , 65, 70 , 75))
+
+age_time_plot
 
 
+```
 
 
 
